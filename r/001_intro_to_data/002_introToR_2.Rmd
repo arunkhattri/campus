@@ -1,0 +1,119 @@
+---
+title: "Intro to R - 2"
+author: "Arun kr. Khattri"
+date: "Sep 27, 2019"
+output:
+  html_document:
+    fg_height: 5
+    fig_width: 8
+    highlight: tango
+    number_sections: no
+    theme: cerulean
+    toc: yes
+---
+<style type = "text/css">
+body{ /* Normal */
+  font-size: 14px;
+}
+h1{ /* Header 1 */
+  font-size: 24px;
+}
+h2{ /* Header 2 */
+  font-size: 20px;
+}
+h3{ /* Header 3 */
+  font-size: 16px;
+}
+code.r{ /* Code Block */
+  font-size: 12px;
+}
+pre{ /* Code Block */
+  font-size: 12px;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Libraries required
+
+```{r message=FALSE}
+library(tidyverse)
+library(openintro)
+```
+
+## Sampling
+### load county data
+```{r}
+data(county)
+glimpse(county)
+```
+
+### unique values
+
+```{r}
+unique(county$state)
+```
+
+### length of unique values
+
+```{r}
+length(unique(county$state))
+```
+
+### unique values in county data
+
+```{r}
+sapply(county, function(x) length(unique(x)))
+```
+
+## remove "District of Columbia" as technically its not a state
+
+```{r}
+county_noDC <- county %>% 
+  filter(state != "District of Columbia") %>% 
+  droplevels()
+
+# check unique values in data set
+sapply(county_noDC, function(x) length(unique(x)))
+```
+
+## simple random sample of 150 counties
+
+```{r}
+county_srs <- county_noDC %>% 
+  sample_n(size = 150)
+
+glimpse(county_srs)
+```
+
+### State distribution of srs counties
+
+```{r}
+county_srs %>% 
+  group_by(state) %>% 
+  count()
+```
+
+## Stratified Sampling
+
+```{r}
+county_str <- county_noDC %>% 
+  group_by(state) %>% 
+  sample_n(size = 3)
+
+# State distribution of str counties
+county_str %>% 
+  group_by(state) %>% 
+  count()
+```
+
+## Principles of Experimental design
+* Control: compare treatment of interest to a control group
+* Randomize: randomly assign subjects to treatments
+* Replicate: collect a sufficiently large sample within a study, or replicate the entire study.
+* Block: account for the potential effect of confounding varables
+  + group subjects into blocks based on these variables.
+  + Randomize within each block to treatment groups
+

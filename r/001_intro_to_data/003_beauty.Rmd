@@ -1,0 +1,77 @@
+---
+title: "Beauty in the classroom"
+author: "Arun kr. Khattri"
+date: "Sep 27, 2019"
+output:
+  html_document:
+    fg_height: 5
+    fig_width: 8
+    highlight: tango
+    number_sections: no
+    theme: cerulean
+    toc: yes
+---
+<style type = "text/css">
+body{ /* Normal */
+  font-size: 14px;
+}
+h1{ /* Header 1 */
+  font-size: 24px;
+}
+h2{ /* Header 2 */
+  font-size: 20px;
+}
+h3{ /* Header 3 */
+  font-size: 16px;
+}
+code.r{ /* Code Block */
+  font-size: 12px;
+}
+pre{ /* Code Block */
+  font-size: 12px;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Libraries required
+
+```{r message=FALSE}
+library(tidyverse)
+library(openintro)
+```
+
+## load data
+
+```{r}
+download.file("http://www.openintro.org/stat/data/evals.RData", destfile = "evals.RData")
+load("evals.RData")
+glimpse(evals)
+```
+
+## Categorical variables
+
+```{r}
+car_var <- names(which(sapply(evals, class) == "factor"))
+car_var
+```
+
+## Recode cls_students variable
+* 'small' - 18 students or fewer,
+* 'midsize' - 19-59 students,
+* 'large' - 60 students or more.
+
+```{r}
+evals_fortified <- evals %>% 
+  mutate(
+    cls_type = case_when(
+      cls_students <= 18 ~ 'small',
+      cls_students >= 19 & cls_students <= 59 ~ 'midsize',
+      cls_students >= 60 ~ 'large',
+    )
+  )
+unique(evals_fortified$cls_type)
+```
+

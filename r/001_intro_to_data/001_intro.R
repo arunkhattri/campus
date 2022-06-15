@@ -64,6 +64,57 @@ email50 %>%
   geom_point()
 
 
-# Observational Studies and Experiments -----------------------------------
+# Observational Studies and Experiments
+# Random Sampling and random assignments
+# Simpson's paradox
+data(UCBAdmissions)
+dim(UCBAdmissions)
+dimnames(UCBAdmissions)
+glimpse(UCBAdmissions)
+# examine the relationship between gender and Admit
+margin.table(UCBAdmissions, c(1, 2))
 
+# converting into dataframe
+ucb_admit <- as.data.frame(UCBAdmissions)
+ucb_df <- ucb_admit %>% 
+  slice(rep(1:n(), Freq)) %>% 
+  select(-Freq)
+glimpse(ucb_df)
 
+ucb_adm_count <- ucb_df %>% 
+  count(Gender, Admit)
+
+# proportion 
+ucb_df %>% 
+  with(table(Gender, Admit)) %>% 
+  prop.table(margin = 2)
+
+# proportion of admitted
+ucb_adm_count %>% 
+  group_by(Gender) %>% 
+  mutate(prop = n / sum(n)) %>% 
+  filter(Admit == "Admitted")
+
+# count taking dept also in account
+ucb_counts <- ucb_df %>% 
+  count(Dept, Gender, Admit)
+ucb_counts
+
+# proportion of males admitted dept wise
+males_admitted_dept <- ucb_counts %>% 
+  group_by(Dept, Gender) %>% 
+  mutate(prop = n / sum(n)) %>% 
+  filter(Gender == "Male", Admit == "Admitted")
+
+# proportion of females admitted dept wise
+females_admitted_dept <- ucb_counts %>% 
+  group_by(Dept, Gender) %>% 
+  mutate(prop = n / sum(n)) %>% 
+  filter(Gender == "Female", Admit == "Admitted")
+
+# making a dataframe of male and female admision prop
+dept = males_admitted_dept$Dept
+males_prop <- males_admitted_dept$prop
+females_prop <- females_admitted_dept$prop
+admitted_prop_df <- data.frame(dept, males_prop, females_prop)
+admitted_prop_df
